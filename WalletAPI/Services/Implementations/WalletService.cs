@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
+using WalletAPI.Contracts.DTOs.Pagination;
 using WalletAPI.Contracts.DTOs.Wallet;
 using WalletAPI.Contracts.Enums;
 using WalletAPI.Data;
@@ -17,7 +18,53 @@ public class WalletService : IWalletService
         _context = context;
     }
 
-    public async Task<WalletResponse> GetBalanceAsync(string userId)
+    public async Task<PaginatedResponse<WalletResponse>> GetWalletsAsync(WalletFilterRequest filter)
+    {
+        var query = _context.Wallets
+            .Include(w => w.User)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(filter.UserId))
+            query = query.Where(w => w.UserId == filter.UserId);
+
+        if (filter.MinBalance.HasValue)
+            query = query.Where(w => w.Balance >= filter.MinBalance.Value);
+
+        if (filter.MaxBalance.HasValue)
+            query = query.Where(w => w.Balance <= filter.MaxBalance.Value);
+
+        if (filter.CreatedStartDate.HasValue)
+            query = query.Where(w => w.CreatedAt >= filter.CreatedStartDate.Value);
+
+        if (filter.CreatedEndDate.HasValue)
+            query = query.Where(w => w.CreatedAt <= filter.CreatedEndDate.Value);
+
+        if (filter.UpdatedStartDate.HasValue)
+            query = query.Where(w => w.UpdatedAt >= filter.UpdatedStartDate.Value);
+
+        if (filter.UpdatedEndDate.HasValue)
+            query = query.Where(w => w.UpdatedAt <= filter.UpdatedEndDate.Value);
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(w => w.UpdatedAt)
+            .Skip((filter.Page - 1) * filter.PageSize)
+            .Take(filter.PageSize)
+            .Select(w => new WalletResponse(
+                w.Balance,
+                w.UpdatedAt
+            ))
+            .ToListAsync();
+
+        return new PaginatedResponse<WalletResponse>(
+            items,
+            filter.PageSize,
+            filter.Page,
+            totalCount);
+    }
+
+    public async Task<WalletResponse> GetUserBalanceAsync(string userId)
     {
         var wallet = await _context.Wallets
             .FirstOrDefaultAsync(w => w.UserId == userId)
@@ -38,7 +85,6 @@ public class WalletService : IWalletService
         wallet.Balance += request.Amount;
         wallet.UpdatedAt = DateTime.UtcNow;
 
-        // Cria uma transação de depósito
         var transaction = new Transaction
         {
             SenderId = userId,

@@ -20,26 +20,21 @@ public class TransactionService : ITransactionService
 
     public async Task<TransactionResponse> CreateTransactionAsync(string userId, TransactionRequest request)
     {
-        // Verifica se o destinatário existe
         var receiver = await _context.Users
             .FirstOrDefaultAsync(u => u.Id == request.ReceiverId)
             ?? throw new KeyNotFoundException("Destinatário não encontrado");
 
-        // Obtém a carteira do remetente
         var senderWallet = await _context.Wallets
             .FirstOrDefaultAsync(w => w.UserId == userId)
             ?? throw new KeyNotFoundException("Carteira do remetente não encontrada");
 
-        // Verifica se há saldo suficiente
         if (senderWallet.Balance < request.Amount)
             throw new InvalidOperationException("Saldo insuficiente");
 
-        // Obtém a carteira do destinatário
         var receiverWallet = await _context.Wallets
             .FirstOrDefaultAsync(w => w.UserId == request.ReceiverId)
             ?? throw new KeyNotFoundException("Carteira do destinatário não encontrada");
 
-        // Cria a transação
         var transaction = new Transaction
         {
             SenderId = userId,
@@ -50,18 +45,15 @@ public class TransactionService : ITransactionService
             Description = request.Description
         };
 
-        // Atualiza os saldos
         senderWallet.Balance -= request.Amount;
         receiverWallet.Balance += request.Amount;
 
         senderWallet.UpdatedAt = DateTime.UtcNow;
         receiverWallet.UpdatedAt = DateTime.UtcNow;
 
-        // Salva as alterações
         _context.Transactions.Add(transaction);
         await _context.SaveChangesAsync();
 
-        // Carrega os dados do remetente e destinatário
         var sender = await _context.Users.FirstAsync(u => u.Id == userId);
 
         return new TransactionResponse(
@@ -86,7 +78,6 @@ public class TransactionService : ITransactionService
             .Include(t => t.Receiver)
             .AsQueryable();
 
-        // Aplicar filtros
         if (!string.IsNullOrEmpty(filter.SenderId))
             query = query.Where(t => t.SenderId == filter.SenderId);
 
@@ -102,10 +93,8 @@ public class TransactionService : ITransactionService
         if (filter.EndDate.HasValue)
             query = query.Where(t => t.CreatedAt <= filter.EndDate.Value);
 
-        // Contar total de itens
         var totalCount = await query.CountAsync();
 
-        // Aplicar paginação
         var items = await query
             .OrderByDescending(t => t.CreatedAt)
             .Skip((filter.Page - 1) * filter.PageSize)

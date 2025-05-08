@@ -43,7 +43,6 @@ public class AuthService : IAuthService
 
         var token = await GenerateJwtToken(user);
 
-        // Carregar wallet e transações
         var wallet = await _context.Wallets
             .FirstOrDefaultAsync(w => w.UserId == user.Id);
 
@@ -116,7 +115,6 @@ public class AuthService : IAuthService
         var jwtKey = _configuration["JwtSettings:SecretKey"]
             ?? throw new InvalidOperationException("JWT Secret Key não configurada");
 
-        // Obter as roles do usuário
         var roles = await _userManager.GetRolesAsync(user);
 
         var claims = new List<Claim>
@@ -126,7 +124,6 @@ public class AuthService : IAuthService
             new(ClaimTypes.Name, user.Name)
         };
 
-        // Adicionar cada role como uma claim
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var key = Encoding.ASCII.GetBytes(jwtKey);

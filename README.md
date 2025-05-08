@@ -1,6 +1,6 @@
 # WalletAPI - Sistema de Carteira Digital
 
-Uma API RESTful para gerenciamento de carteira digital, desenvolvida com ASP.NET Core 8.0 e Entity Framework Core.
+Uma API RESTful conceitual e muito simples para gerenciamento de carteira digital, desenvolvida com ASP.NET Core 8.0 e Entity Framework Core.
 
 ## Tecnologias
 
@@ -11,7 +11,7 @@ Uma API RESTful para gerenciamento de carteira digital, desenvolvida com ASP.NET
 - **JWT**: Para autenticação stateless
 - **xUnit**: Framework de testes
 - **Shouldly**: Biblioteca para asserções mais legíveis
-- **Moq**: Framework de mocking para testes
+- **Docker**: Para iniciar o banco de dados
 
 ## Por que .NET em vez de Django/Python?
 
@@ -20,8 +20,40 @@ Embora Python seja uma excelente escolha para automações e scripts, o .NET foi
 1. **Experiência**: Maior proficiência em C# e no ecossistema .NET
 2. **Performance**: O .NET oferece excelente performance para aplicações web
 3. **Tipagem Forte**: Ajuda a prevenir erros em tempo de compilação
-4. **Ferramentas de Desenvolvimento**: Visual Studio e Rider oferecem excelente suporte
-5. **Ecossistema Maduro**: NuGet, Identity, Entity Framework são bem estabelecidos
+
+## Setup do Projeto
+
+### Opção 1: Setup com Docker (Recomendado)
+
+#### Pré-requisitos
+
+- Docker instalado
+- .NET SDK 8.0 instalado (para gerar certificado)
+
+### Setup Local
+
+1. Clone o repositório
+2. Abra a pasta do projeto e faça 'docker-compose up -d'
+3. Execute as migrations:
+   ```bash
+   dotnet ef database update
+   ```
+4. Execute o projeto:
+   ```bash
+   dotnet run
+   ```
+
+## Testes de API com Postman
+
+Para facilitar a execução dos testes, você pode importar a coleção do Postman diretamente.
+
+1. Baixe a coleção do Postman [aqui](./WalletAPI.postman_collection.json).
+2. Importe a coleção no Postman:
+   - Abra o Postman.
+   - Vá em **File > Import** e selecione o arquivo JSON da coleção.
+3. Execute os testes de API conforme necessário.
+
+A coleção contém os testes básicos para todas as rotas da API.
 
 ## Autenticação
 
@@ -46,11 +78,9 @@ Senha: Senha@123
 
 Email: maria@email.com
 Senha: Senha@123
-
-(e outros...)
 ```
 
-## 📌 Endpoints
+## Endpoints
 
 ### Autenticação (`/api/v1/auth`)
 
@@ -77,15 +107,31 @@ Registro de novo usuário.
 }
 ```
 
-### Carteira (`/api/v1/wallet`)
+### Carteira (`/api/v1/wallets`)
 
-#### GET /balance
+#### GET / (Requer role Admin)
+
+Lista todas as carteiras com filtros avançados.
+
+```
+?userId=string
+&minBalance=0
+&maxBalance=1000
+&createdStartDate=2024-03-20
+&createdEndDate=2024-03-21
+&updatedStartDate=2024-03-20
+&updatedEndDate=2024-03-21
+&page=1
+&pageSize=10
+```
+
+#### GET /user/balance (Requer autenticação)
 
 Obtém o saldo da carteira do usuário autenticado.
 
-#### POST /deposit/{userId}
+#### POST /deposit/{userId} (Requer role Admin)
 
-Adiciona saldo à carteira (requer role Admin).
+Adiciona saldo à carteira de um usuário específico.
 
 ```json
 {
@@ -93,24 +139,11 @@ Adiciona saldo à carteira (requer role Admin).
 }
 ```
 
-### Transações (`/api/v1/transaction`)
+### Transações (`/api/v1/transactions`)
 
-#### POST /
+#### GET / (Requer role Admin)
 
-Cria uma nova transação.
-
-```json
-{
-  "receiverId": "string",
-  "amount": 0.0,
-  "description": "string",
-  "type": "Transfer"
-}
-```
-
-#### GET /
-
-Lista transações do usuário com filtros.
+Lista todas as transações com filtros avançados.
 
 ```
 ?senderId=string
@@ -122,9 +155,22 @@ Lista transações do usuário com filtros.
 &pageSize=10
 ```
 
-#### GET /{id}
+#### GET /user (Requer autenticação)
 
-Obtém detalhes de uma transação específica.
+Lista as transações do usuário autenticado.
+
+#### POST / (Requer autenticação)
+
+Cria uma nova transação.
+
+```json
+{
+  "receiverId": "string",
+  "amount": 0.0,
+  "description": "string",
+  "type": "Transfer"
+}
+```
 
 ## Fluxo de Dados
 
@@ -157,22 +203,6 @@ Para executar os testes:
 
 ```bash
 dotnet test
-```
-
-## Setup do Projeto
-
-1. Clone o repositório
-2. Configure a string de conexão no `appsettings.json`
-3. Execute as migrations:
-
-```bash
-dotnet ef database update
-```
-
-4. Execute o projeto:
-
-```bash
-dotnet run
 ```
 
 ## Segurança

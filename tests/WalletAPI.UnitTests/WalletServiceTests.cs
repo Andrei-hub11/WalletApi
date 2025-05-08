@@ -25,7 +25,79 @@ public class WalletServiceTests
     }
 
     [Fact]
-    public async Task GetBalanceAsync_ShouldReturnWallet_WhenUserExists()
+    public async Task GetWalletsAsync_ShouldReturnFilteredAndPaginatedWallets()
+    {
+        // Arrange
+        var service = GetWalletService(out var context);
+        var wallets = new List<Wallet>();
+        var now = DateTime.UtcNow;
+
+        // Criar 20 carteiras com valores diferentes
+        for (int i = 0; i < 20; i++)
+        {
+            var wallet = new Wallet
+            {
+                UserId = $"user-{i}",
+                Balance = i * 100,
+                CreatedAt = now.AddDays(-i),
+                UpdatedAt = now.AddHours(-i)
+            };
+            wallets.Add(wallet);
+        }
+
+        await context.Wallets.AddRangeAsync(wallets);
+        await context.SaveChangesAsync();
+
+        var filter = new WalletFilterRequest(
+            UserId: null,
+            MinBalance: 500,
+            MaxBalance: 1500,
+            CreatedStartDate: now.AddDays(-10),
+            CreatedEndDate: now,
+            UpdatedStartDate: null,
+            UpdatedEndDate: null,
+            Page: 1,
+            PageSize: 5
+        );
+
+        // Act
+        var result = await service.GetWalletsAsync(filter);
+
+        // Assert
+        result.Items.Count.ShouldBe(5);
+        result.TotalCount.ShouldBe(6);
+        result.PageSize.ShouldBe(5);
+        result.PageNumber.ShouldBe(1);
+        result.Items.All(w => w.Balance >= 500 && w.Balance <= 1500).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task GetWalletsAsync_ShouldReturnEmptyList_WhenNoWalletsMatchFilters()
+    {
+        // Arrange
+        var service = GetWalletService(out var context);
+        var filter = new WalletFilterRequest(
+            UserId: "non-existent-user",
+            MinBalance: null,
+            MaxBalance: null,
+            CreatedStartDate: null,
+            CreatedEndDate: null,
+            UpdatedStartDate: null,
+            UpdatedEndDate: null,
+            Page: 1,
+            PageSize: 10
+        );
+
+        // Act
+        var result = await service.GetWalletsAsync(filter);
+
+        // Assert
+        result.Items.ShouldBeEmpty();
+        result.TotalCount.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task GetUserBalanceAsync_ShouldReturnWallet_WhenUserExists()
     {
         // Arrange
         var userId = Guid.NewGuid().ToString();
@@ -41,7 +113,7 @@ public class WalletServiceTests
         await context.SaveChangesAsync();
 
         // Act
-        var response = await service.GetBalanceAsync(userId);
+        var response = await service.GetUserBalanceAsync(userId);
 
         // Assert
         response.Balance.ShouldBe(100);
@@ -49,14 +121,14 @@ public class WalletServiceTests
     }
 
     [Fact]
-    public async Task GetBalanceAsync_ShouldThrow_WhenWalletDoesNotExist()
+    public async Task GetUserBalanceAsync_ShouldThrow_WhenWalletDoesNotExist()
     {
         // Arrange
         var service = GetWalletService(out _);
 
         // Act & Assert
         await Should.ThrowAsync<KeyNotFoundException>(() =>
-            service.GetBalanceAsync("non-existing-user-id"));
+            service.GetUserBalanceAsync("non-existing-user-id"));
     }
 
     [Fact]

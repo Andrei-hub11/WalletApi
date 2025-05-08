@@ -1,0 +1,304 @@
+{
+	"info": {
+		"_postman_id": "905f3c28-6efb-40f8-8dbf-9307cc4f7fbc",
+		"name": "WalletAPI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21488420"
+	},
+	"item": [
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "get-user-transaction",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI0NDI5YzAyNS0zYjFhLTQyMDUtYTllOS1iZTRhYTU2M2FjYTEiLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSIsInVuaXF1ZV9uYW1lIjoiQWRtaW5pc3RyYWRvciIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NjY4MDY2MywiZXhwIjoxNzQ2NzA5NDYzLCJpYXQiOjE3NDY2ODA2NjN9.6-7j5Q4zkmcROTZyf8SZe4KnI9XgdIw06FT_qMDspP8",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:7260/api/v1/transactions/user",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7260",
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI0NDI5YzAyNS0zYjFhLTQyMDUtYTllOS1iZTRhYTU2M2FjYTEiLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSIsInVuaXF1ZV9uYW1lIjoiQWRtaW5pc3RyYWRvciIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NjY4MDY2MywiZXhwIjoxNzQ2NzA5NDYzLCJpYXQiOjE3NDY2ODA2NjN9.6-7j5Q4zkmcROTZyf8SZe4KnI9XgdIw06FT_qMDspP8",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:7260/api/v1/transactions?Page=2&PageSize=10",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7260",
+							"path": [
+								"api",
+								"v1",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "Page",
+									"value": "2"
+								},
+								{
+									"key": "PageSize",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI0NDI5YzAyNS0zYjFhLTQyMDUtYTllOS1iZTRhYTU2M2FjYTEiLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSIsInVuaXF1ZV9uYW1lIjoiQWRtaW5pc3RyYWRvciIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NjY4MDY2MywiZXhwIjoxNzQ2NzA5NDYzLCJpYXQiOjE3NDY2ODA2NjN9.6-7j5Q4zkmcROTZyf8SZe4KnI9XgdIw06FT_qMDspP8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"ReceiverId\": \"5202de83-678f-49a7-83f4-25975166f893\",\r\n  \"Amount\": 5,\r\n  \"Description\": \"pagamento\",\r\n  \"Type\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7260/api/v1/transactions",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7260",
+							"path": [
+								"api",
+								"v1",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Email\": \"admin@email.com\",\r\n  \"Password\": \"Admin@123&&\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7260/api/v1/auth/login",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7260",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Name\": \"string\",\r\n  \"Email\": \"user@example.com\",\r\n  \"Password\": \"stringst\",\r\n  \"ConfirmPassword\": \"string\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7260/api/v1/auth/register",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7260",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wallet",
+			"item": [
+				{
+					"name": "get-user-wallet",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI0NDI5YzAyNS0zYjFhLTQyMDUtYTllOS1iZTRhYTU2M2FjYTEiLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSIsInVuaXF1ZV9uYW1lIjoiQWRtaW5pc3RyYWRvciIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NjY4MDY2MywiZXhwIjoxNzQ2NzA5NDYzLCJpYXQiOjE3NDY2ODA2NjN9.6-7j5Q4zkmcROTZyf8SZe4KnI9XgdIw06FT_qMDspP8",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:7260/api/v1/wallets/user/balance",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7260",
+							"path": [
+								"api",
+								"v1",
+								"wallets",
+								"user",
+								"balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-wallets",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI0NDI5YzAyNS0zYjFhLTQyMDUtYTllOS1iZTRhYTU2M2FjYTEiLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSIsInVuaXF1ZV9uYW1lIjoiQWRtaW5pc3RyYWRvciIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NjY4MDY2MywiZXhwIjoxNzQ2NzA5NDYzLCJpYXQiOjE3NDY2ODA2NjN9.6-7j5Q4zkmcROTZyf8SZe4KnI9XgdIw06FT_qMDspP8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7260/api/v1/wallets?Page=1&PageSize=10",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7260",
+							"path": [
+								"api",
+								"v1",
+								"wallets"
+							],
+							"query": [
+								{
+									"key": "Page",
+									"value": "1"
+								},
+								{
+									"key": "PageSize",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deposit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI0NDI5YzAyNS0zYjFhLTQyMDUtYTllOS1iZTRhYTU2M2FjYTEiLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSIsInVuaXF1ZV9uYW1lIjoiQWRtaW5pc3RyYWRvciIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NjY4MDY2MywiZXhwIjoxNzQ2NzA5NDYzLCJpYXQiOjE3NDY2ODA2NjN9.6-7j5Q4zkmcROTZyf8SZe4KnI9XgdIw06FT_qMDspP8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Amount\": 10.00\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7260/api/v1/wallet/deposit/4429c025-3b1a-4205-a9e9-be4aa563aca1",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7260",
+							"path": [
+								"api",
+								"v1",
+								"wallet",
+								"deposit",
+								"4429c025-3b1a-4205-a9e9-be4aa563aca1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
